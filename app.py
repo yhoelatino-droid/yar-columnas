@@ -15,7 +15,7 @@ st.write("---")
 
 st.subheader("Esquema Geométrico de Columna (3D)")
 
-# Ilustración isométrica 3D nativa de una columna de concreto armado
+# Ilustración isométrica 3D nativa de una columna de concreto armado (Peralte cambiado por Fondo)
 columna_3d_svg = """
 <svg xmlns="http://w3.org" viewBox="0 0 600 350" width="100%">
   <rect width="600" height="350" fill="#11151c" rx="10"/>
@@ -37,7 +37,7 @@ columna_3d_svg = """
   <line x1="290" y1="315" x2="390" y2="265" stroke="#f8fafc" stroke-width="1.5"/>
   <line x1="290" y1="310" x2="290" y2="320" stroke="#f8fafc" stroke-width="1.5"/>
   <line x1="390" y1="260" x2="390" y2="270" stroke="#f8fafc" stroke-width="1.5"/>
-  <text x="345" y="300" fill="#f8fafc" font-family="Arial" font-size="14" font-weight="bold" transform="rotate(-26, 345, 300)">Peralte (t)</text>
+  <text x="345" y="300" fill="#f8fafc" font-family="Arial" font-size="14" font-weight="bold" transform="rotate(-26, 345, 300)">Fondo (t)</text>
 </svg>
 """
 
@@ -46,12 +46,10 @@ st.write("---")
 
 st.subheader("Datos de Entrada")
 
-# Parámetros estructurales principales
 num_pisos = st.number_input("Número de Pisos de la edificación", min_value=1, max_value=20, value=3, step=1)
 area_trib = st.number_input("Área Tributaria de la columna (m²)", min_value=1.0, max_value=100.0, value=16.0, step=0.5)
 fc = st.number_input("Resistencia del concreto f'c (kg/cm²)", min_value=140, max_value=420, value=210, step=70)
 
-# Selector de Categoría según Norma E.030 del Perú
 categoria = st.selectbox(
     "Categoría de la Edificación (Norma E.030):",
     ("Categoría C: Comunes (Viviendas, Hoteles, Oficinas) - 1000 kg/m²", 
@@ -66,7 +64,6 @@ with col2:
     forma_columna = st.radio("Forma Geométrica:", ("Cuadrada", "Circular"))
 
 if st.button("Calcular Sección de Columna ▶️", use_container_width=True):
-    # Asignación del peso normativo por m² por piso según la categoría electa
     if "Categoría A" in categoria:
         peso_por_m2 = 1500
         cat_letra = "A (Esenciales)"
@@ -77,13 +74,8 @@ if st.button("Calcular Sección de Columna ▶️", use_container_width=True):
         peso_por_m2 = 1000
         cat_letra = "C (Comunes)"
         
-    # 1. Estimación de la carga de servicio total (P)
     P_servicio = area_trib * num_pisos * peso_por_m2
-    
-    # 2. Factor de reducción por ubicación (0.45 centrales, 0.35 excéntricas/esquineras)
     factor_aci = 0.45 if tipo_columna == "Central" else 0.35
-    
-    # 3. Área de concreto requerida en cm²
     area_concreto_cm2 = P_servicio / (factor_aci * fc)
     
     st.success("### 📊 MEMORIA DE RENDIMIENTO NORMATIVA")
@@ -109,7 +101,6 @@ if st.button("Calcular Sección de Columna ▶️", use_container_width=True):
     st.write("---")
     st.subheader("📄 Reporte y Exportación")
     
-    # Generamos la plantilla HTML limpia para la impresión
     html_reporte = f"""
     <div style="padding:20px; border:2px solid #333; font-family:Arial, sans-serif; background-color:white; color:black; border-radius:8px;">
         <h2 style="text-align:center; color:#1e3a8a; margin-bottom:5px;">MEMORIA DE CÁLCULO ESTRUCTURAL</h2>
@@ -151,16 +142,14 @@ if st.button("Calcular Sección de Columna ▶️", use_container_width=True):
             Memoria técnica generada automáticamente por YAR Structural. Formato oficial conforme al RNE Perú.
         </p>
         <script>
-            // Auto invocación de impresión si se abre independiente
             window.onload = function() {{ window.print(); }}
         </script>
     </div>
     """
     
-    # Mostramos la hoja blanca visual en la app sin barra de scroll interna
     st.components.v1.html(html_reporte, height=480, scrolling=True)
     
-    # NUEVO: Botón de descarga oficial y nativo que Streamlit SÍ permite ejecutar
+    # Botón de descarga nativo de Streamlit
     st.download_button(
         label="📥 Descargar Memoria de Cálculo Oficial",
         data=html_reporte,
@@ -168,4 +157,5 @@ if st.button("Calcular Sección de Columna ▶️", use_container_width=True):
         mime="text/html",
         use_container_width=True
     )
+
 
