@@ -15,7 +15,7 @@ st.write("---")
 
 st.subheader("Esquema Geométrico de Columna (3D)")
 
-# Ilustración isométrica 3D nativa de una columna de concreto armado (Peralte cambiado por Fondo)
+# Ilustración isométrica 3D nativa de una columna de concreto armado
 columna_3d_svg = """
 <svg xmlns="http://w3.org" viewBox="0 0 600 350" width="100%">
   <rect width="600" height="350" fill="#11151c" rx="10"/>
@@ -79,7 +79,8 @@ if st.button("Calcular Sección de Columna ▶️", use_container_width=True):
     area_concreto_cm2 = P_servicio / (factor_aci * fc)
     
     st.success("### 📊 MEMORIA DE RENDIMIENTO NORMATIVA")
-    st.write(f"Peso asignado por norma: **{peso_por_m2} kg/m² por nivel**")
+    # CORREGIDO AQUÍ: Carga por categoría
+    st.write(f"Carga por Categoría asignada por norma: **{peso_por_m2} kg/m² por nivel**")
     st.write(f"Carga de Servicio Total ($P$): **{P_servicio:,.0f} kg**")
     st.write(f"Área Neta de Concreto Requerida ($A_c$): **{area_concreto_cm2:.2f} cm²**")
     
@@ -119,13 +120,14 @@ if st.button("Calcular Sección de Columna ▶️", use_container_width=True):
             <li><strong>Área Tributaria (A_trib):</strong> {area_trib} m²</li>
             <li><strong>Resistencia del Concreto (f'c):</strong> {fc} kg/cm²</li>
             <li><strong>Categoría de Edificación (Norma E.030):</strong> Categoría {cat_letra}</li>
-            <li><strong>Carga métrica asignada por norma:</strong> {peso_por_m2} kg/m² por nivel</li>
+            <!-- CORREGIDO AQUÍ: Carga por categoría -->
+            <li><strong>Carga por Categoría asignada por norma:</strong> {peso_por_m2} kg/m² por nivel</li>
         </ul>
         
         <h4 style="color:#1e3a8a; border-bottom:1px solid #ccc; padding-bottom:5px;">2. PROCEDIMIENTO DETALLADO DE CÁLCULO</h4>
         <p style="font-size:14px; line-height:1.5;">
             <strong>Paso 2.1: Estimación de la Carga de Servicio Total (P)</strong><br>
-            P = A_trib &times; N° Pisos &times; Peso_Normativo<br>
+            P = A_trib &times; N° Pisos &times; Carga_Categoria<br>
             P = {area_trib} m² &times; {num_pisos} &times; {peso_por_m2} kg/m² = <strong>{P_servicio:,.0f} kg</strong>
         </p>
         <p style="font-size:14px; line-height:1.5;">
@@ -141,17 +143,14 @@ if st.button("Calcular Sección de Columna ▶️", use_container_width=True):
         <p style="font-size:11px; color:#555; text-align:center; margin-top:30px;">
             Memoria técnica generada automáticamente por YAR Structural. Formato oficial conforme al RNE Perú.
         </p>
-        <script>
-            window.onload = function() {{ window.print(); }}
-        </script>
     </div>
     """
     
     st.components.v1.html(html_reporte, height=480, scrolling=True)
     
-    # Botón de descarga nativo de Streamlit
+    st.markdown("<br>", unsafe_allow_html=True)
     st.download_button(
-        label="📥 Descargar Memoria de Cálculo Oficial",
+        label="📥 Descargar Memoria de Cálculo Oficial (PDF / HTML)",
         data=html_reporte,
         file_name=f"Memoria_Columna_{tipo_columna}.html",
         mime="text/html",
