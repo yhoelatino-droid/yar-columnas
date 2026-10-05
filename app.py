@@ -109,7 +109,7 @@ if st.button("Calcular Sección de Columna ▶️", use_container_width=True):
     st.write("---")
     st.subheader("📄 Reporte y Exportación")
     
-    # Generamos la plantilla HTML limpia para la impresión a PDF
+    # Generamos la plantilla HTML limpia para la impresión
     html_reporte = f"""
     <div style="padding:20px; border:2px solid #333; font-family:Arial, sans-serif; background-color:white; color:black; border-radius:8px;">
         <h2 style="text-align:center; color:#1e3a8a; margin-bottom:5px;">MEMORIA DE CÁLCULO ESTRUCTURAL</h2>
@@ -139,7 +139,6 @@ if st.button("Calcular Sección de Columna ▶️", use_container_width=True):
         </p>
         <p style="font-size:14px; line-height:1.5;">
             <strong>Paso 2.2: Área de Concreto Mínima Requerida (Ac)</strong><br>
-            Según criterio ACI simplificado para cargas de gravedad, usando factor &lambda; = {factor_aci}:<br>
             Ac = P / (&lambda; &times; f'c)<br>
             Ac = {P_servicio:,.0f} / ({factor_aci} &times; {fc}) = <strong>{area_concreto_cm2:.2f} cm²</strong>
         </p>
@@ -151,11 +150,22 @@ if st.button("Calcular Sección de Columna ▶️", use_container_width=True):
         <p style="font-size:11px; color:#555; text-align:center; margin-top:30px;">
             Memoria técnica generada automáticamente por YAR Structural. Formato oficial conforme al RNE Perú.
         </p>
+        <script>
+            // Auto invocación de impresión si se abre independiente
+            window.onload = function() {{ window.print(); }}
+        </script>
     </div>
-    <br>
-    <button onclick="window.print()" style="width:100%; padding:12px; background-color:#1e3a8a; color:white; border:none; border-radius:5px; font-size:16px; font-weight:bold; cursor:pointer;">
-        🖨️ Exportar Memoria de Cálculo a PDF / Imprimir
-    </button>
     """
-    # CORREGIDO AQUÍ: Altura ampliada a 800 para ver todo completo
-    st.components.v1.html(html_reporte, height=800, scrolling=False)
+    
+    # Mostramos la hoja blanca visual en la app sin barra de scroll interna
+    st.components.v1.html(html_reporte, height=480, scrolling=True)
+    
+    # NUEVO: Botón de descarga oficial y nativo que Streamlit SÍ permite ejecutar
+    st.download_button(
+        label="📥 Descargar Memoria de Cálculo Oficial",
+        data=html_reporte,
+        file_name=f"Memoria_Columna_{tipo_columna}.html",
+        mime="text/html",
+        use_container_width=True
+    )
+
